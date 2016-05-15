@@ -1,0 +1,49 @@
+<div class="form-group">
+        <label class="col-sm-2 control-label">Official No</label>        
+        <div class="col-sm-3" >
+           <?php echo form_input(array('name' => 'officialNo', 'id' => 'officialNo', "class" => "form-control required", 'required'=>'required','placeholder' => 'Official Number')); ?>           
+        </div>
+        <div class="col-sm-1">
+            <a class="help-icon" data-container="body" data-toggle="popover" data-placement="right" data-content="Please Official Number">
+                <i class="fa fa-question-circle"></i>
+            </a>
+        </div>
+        <div class="col-sm-4 danger"><span class="loadingImg"></span><span class="alertSMS label label-danger" style="font-size: 89%;"></span></div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Full Name</label>
+        <div class="col-sm-3">
+           <?php echo form_input(array('name' => 'fullName', "class" => "form-control fullName required",'required'=>'required', 'placeholder' => 'Sailor name', 'readonly'=>'readonly', 'value' => set_value('fullName'))); ?>
+        </div>
+        <label class="col-sm-2 control-label">Rank</label>
+                
+        <div class="col-sm-3">
+           <?php echo form_input(array('name' => 'rank',  "class" => "form-control rank required",'required'=>'required', 'value' => '', 'placeholder' => 'Rank', 'readonly'=>'readonly', 'value' => set_value('rank'))); ?>
+        </div>
+    </div>
+
+function searchSailor(){
+        $officalNumber = $this->input->post("officeNumber");
+        $info = $this->utilities->findByAttributeWithJoin("sailor","bn_rank","RANKID", "RANK_ID","RANK_NAME", array("OFFICIALNUMBER" => $officalNumber), "INNER");
+        echo json_encode($info);
+    }
+
+<script>
+    $(".officialNo").on('blur', function(){
+        var officeNumber = $(this).val();
+        $.ajax({
+            type: "post",
+            data: {officeNumber: officeNumber},
+            dataType: "json",
+            url: "<?php echo site_url(); ?>sailorsInfo/overweightInfo/searchSailor",
+            beforeSend: function () {
+                $(".loadingImg").html("<img src='<?php echo base_url(); ?>dist/img/loader-small.gif' />");
+            },
+            success: function (data) {
+                $(".loadingImg").html("");
+                $(".fullName").val(data['FULLNAME']);
+                $(".rank").val(data['RANK_NAME']);
+            }
+        });
+    });
+</script>
